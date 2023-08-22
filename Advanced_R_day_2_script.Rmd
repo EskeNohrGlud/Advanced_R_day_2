@@ -1,0 +1,139 @@
+---
+title: "advanced R day 2"
+author: "Eske"
+date: "2023-08-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyr)
+library(dplyr)
+```
+
+
+```{r}
+install.packages(c('gapminder','ggplot2','gganimate','gifski'))
+library(gapminder)
+library(ggplot2)
+library(gganimate)
+library(gifski)
+```
+```{r}
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+   geom_point(alpha = 0.7, show.legend = FALSE) +
+   scale_colour_manual(values = country_colors) +
+   scale_size(range = c(2, 12)) +
+   scale_x_log10() +
+   facet_wrap(~continent) +
+   labs(title = 'Year: 1952-2007', x = 'GDP per capita', y = 'Life expectancy')
+
+ggsave('plot_gdpPercap_lifeExp_static.png', width=8, height=8)
+
+```
+
+
+```{r}
+p1 <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+             geom_point(alpha = 0.7, show.legend = FALSE) +
+             scale_colour_manual(values = country_colors) +
+             scale_size(range = c(2, 12)) +
+             scale_x_log10() +
+             facet_wrap(~continent) +
+             # Animating the plot
+             labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life expectancy') +
+             transition_time(year) +
+             ease_aes('linear')
+
+animate(p1)
+anim_save('plot_gdpPercap_lifeExp.gif')
+```
+```{r}
+gapminder
+```
+```{r}
+iris
+```
+```{r}
+iris %>%group_by(Species) %>%ggplot(aes(Petal.Length,Petal.Width))+
+  geom_point(size = 3, aes(shape =Species, color = Species))+
+  theme_bw()
+```
+
+
+```{r}
+iris %>%group_by(Species) %>%ggplot(aes(Petal.Length,Petal.Width, shape =Species, color = Species))+
+  geom_point(size = 3)+
+  theme_bw()+
+  facet_wrap(~Species)
+  
+```
+
+```{r}
+iris %>%group_by(Species) %>%ggplot(aes(Petal.Length,Petal.Width, shape =Species, color = Species))+
+  geom_point(size = 3)+
+  theme_bw()+
+  facet_grid(Species ~.)
+```
+```{r}
+iris %>%group_by(Species) %>%ggplot(aes(Petal.Length,Petal.Width, shape =Species, color = Species))+
+  geom_point(size = 3)+
+  theme_bw()+
+  facet_wrap(~Petal.Length)
+
+```
+```{r}
+head(gapminder)
+```
+
+
+```{r}
+
+gapminder %>% filter(year == "1992") %>% ggplot(aes(x =(gdpPercap), y=lifeExp, size =pop/1000000,color =continent,))+
+  geom_point()+
+  theme_bw(base_size = 16)+
+  scale_x_log10()+
+  labs(title = "Gapminder for 1992")+
+  ylab("Life expectancy at birth (years)")+
+  xlab("Gross Domestic Product (log scale)")+
+  labs(color ="Continent", size = "Population \n (millions)")
+
+```
+
+
+Exercises 
+
+```{r}
+How can you tell if an object is a tibble?
+class(gapminder)
+gapminder$country
+gapminder[[]]
+```
+
+```{r}
+library(dplyr)
+
+# Sample tibble
+my_tibble <- tibble(
+  x = c(1, 2, 3),
+  y = c(4, 5, 6)
+)
+
+# Variable name stored in an object
+var_name <- "y"
+```
+
+```{r}
+extracted_variable <- my_tibble[[var_name]]
+print(extracted_variable)
+my_tibble$y
+```
+```{r}
+?tibble::enframe()
+x<-c(a=1,b=2,c=3,d=4)
+tibble::enframe(x, name = "name", value = "value")
+```
+
